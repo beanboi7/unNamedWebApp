@@ -4,7 +4,7 @@
     cursor: pointer;
 }
 
-.successMessage {
+.success {
     color: green;
     font-weight: bold;
 }

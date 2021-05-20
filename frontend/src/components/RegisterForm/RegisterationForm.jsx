@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import AlertComponent from "../Alert/AlertComponent";
-
-
-Need to add success MessageChannel, server status, redirection to home
+import axios from 'axios';
+import {withRouter} from "react-router-dom";
 
 
 function RegisterationForm(props){
@@ -10,12 +9,13 @@ function RegisterationForm(props){
             email : "",
             password : "",
             confirmpassword : "",
+            success: null,
         });
     
     const handleChange = (e) => {
         const {id,value} = e.target;
-        setState(currentState => ({
-            ...currentState,
+        setState(prevState => ({
+            ...prevState,
             [id]: value,
         }))
     }
@@ -24,16 +24,48 @@ function RegisterationForm(props){
         e.preventDefault();
         if(currentState.password === currentState.confirmpassword){
             //call api and handle it
-            console.log("call the backend API to post the registration details")
+            sendDetailsToServer();
         } else{
             props.showError("Passwords don't match!")
         }
     }
 
+    const sendDetailsToServer = async () =>{
+        if(currentState.email.length && currentState.password.length){
+            props.showError(null);
+            const payload = {
+                email: currentState.email,
+                password: currentState.password,
+            }
+            response = await axios.post(API_BASE_URL+'register', payload)
+            
+            if(response.data.code === 200){
+                setState(prevState => ({
+                    ...prevState,
+                    'success' : 'Registration successful. Redirecting to home page..'
+                }))
+            redirectToHome();
+            props.showError(null)
+            } else if (response.data.code == 404){
+                props.showError("Some error ocurred");
+            } else{
+                props.showError("Enter valid userName and password")
+            }
+        } 
+    }
+
+    const redirectToHome = () =>{
+        props.updateTitle("Home");
+        props.history.push("/home");
+    }
+    const redirectToLogin = () =>{
+        props.updateTitle("Login");
+        props.history.push("/login");
+    }
+
     
     return(
         <div className ="card col-12 col-lg-4 login-card mt-2 hv-center">
-        <AlertComponent />
             <form> 
                 <div className="col-auto">
                     <label htmlFor="exampleInputEmail1">Email address</label>
@@ -85,11 +117,17 @@ function RegisterationForm(props){
 
                 </div>
             </form>
-
+            <div className="alert alert-success mt-2" style={{display: currentState.success ? 'block' : 'none' }} role="alert">
+                {currentState.success}
+            </div>
+            <div className="mt-2">
+                <span>Already have an account?</span>
+                <span className="loginText" onClick={() => redirectToLogin()}>Login here</span> 
+            </div>
             
         </div>
         
     );
 }
 
-export default RegisterationForm;
+export default withRouter(RegisterationForm);
