@@ -1,17 +1,13 @@
 package main
 
-import (
-	"goLogin/controller"
-	"log"
-	"net/http"
-
-	"github.com/gorilla/mux"
-)
+import "github.com/gofiber/fiber/v2"
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/register", controller.RegisterHandler).Methods("POST")
-	r.HandleFunc("/login", controller.LoginHandler).Methods("POST")
+	app := fiber.New()
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World 👋!")
+	})
+
+	app.Listen(":3000")
 }
