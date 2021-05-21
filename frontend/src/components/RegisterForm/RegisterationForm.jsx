@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AlertComponent from "../Alert/AlertComponent";
 import axios from 'axios';
 import {withRouter} from "react-router-dom";
+import API_BASE_URL from "../../constants/apiConstants"
 
 
 function RegisterationForm(props){
@@ -37,7 +38,7 @@ function RegisterationForm(props){
                 email: currentState.email,
                 password: currentState.password,
             }
-            response = await axios.post(API_BASE_URL+'register', payload)
+            const response = await axios.post(API_BASE_URL+'register', payload)
             
             if(response.data.code === 200){
                 setState(prevState => ({
