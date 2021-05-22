@@ -1,6 +1,7 @@
 package database
 
 import (
+	"goLogin/models"
 	"log"
 	"os"
 
@@ -8,6 +9,8 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+var DB *gorm.DB //global var for adding into the DB, used in controllers
 
 func Connect() {
 	env := godotenv.Load()
@@ -18,9 +21,13 @@ func Connect() {
 	pass := os.Getenv("DBPASSWORD")
 	connectionString := "root:" + pass + "@/goLogin"
 
-	_, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{})
+	connection, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{})
 
 	if err != nil {
 		panic("could not connect to the database")
 	}
+
+	DB = connection
+
+	connection.AutoMigrate(&models.User{})
 }
