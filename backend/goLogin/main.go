@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./database"
-	"./routes"
+	"goLogin/database"
+	"goLogin/routes"
 
 	"github.com/gofiber/fiber/v2"
 )
