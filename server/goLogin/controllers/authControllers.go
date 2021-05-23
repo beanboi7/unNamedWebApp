@@ -35,10 +35,6 @@ func Register(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-// "name": "kewkman",
-// "password": "aaivardhu",
-// "email": "vasanthandco@gmail.com" use when login
-
 var SecretKey string = ""
 
 func Login(c *fiber.Ctx) error {
