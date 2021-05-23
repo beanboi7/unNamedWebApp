@@ -26,9 +26,40 @@ func Register(c *fiber.Ctx) error {
 
 	database.DB.Create(&user)
 
-	// "name": "kewkman",
-	// "password": "aaivardhu",
-	// "email": "vasanthandco@gmail.com" use when login
+	return c.JSON(user)
+}
 
+// "name": "kewkman",
+// "password": "aaivardhu",
+// "email": "vasanthandco@gmail.com" use when login
+
+func Login(c *fiber.Ctx) error {
+	var data map[string]string
+
+	err := c.BodyParser(&data)
+	if err != nil {
+		return err
+	}
+
+	var user models.User
+	database.DB.Where("email = ?", data["email"]).First(&user)
+
+	//when such a user is not found in db
+	if user.Id == 0 {
+		c.Status(fiber.StatusNotFound)
+		return c.JSON(fiber.Map{
+			"message": "User not found in DB",
+		})
+	}
+
+	//if user is found,we check for password
+	passError := bcrypt.CompareHashAndPassword(user.Password, []byte(data["password"]))
+	if passError != nil {
+		return c.JSON(fiber.Map{
+			"message": "Incorrect Password was given",
+		})
+	}
+
+	//else if right password was given, we display the user from db
 	return c.JSON(user)
 }
