@@ -3,8 +3,14 @@ package controllers
 import (
 	"goLogin/database"
 	"goLogin/models"
+	"os"
 
+	"strconv"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -33,6 +39,8 @@ func Register(c *fiber.Ctx) error {
 // "password": "aaivardhu",
 // "email": "vasanthandco@gmail.com" use when login
 
+var SecretKey string = ""
+
 func Login(c *fiber.Ctx) error {
 	var data map[string]string
 
@@ -60,6 +68,79 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	//else if right password was given, we display the user from db
+	//else if right password was given, a token is made and stored in server
+
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+		Issuer:    strconv.Itoa(int(user.Id)),
+		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+	})
+
+	env := godotenv.Load()
+	if env != nil {
+		return env
+	}
+	key := os.Getenv("SECRETKEY")
+	SecretKey = key
+	token, err := claims.SignedString([]byte(key))
+	if err != nil {
+		c.Status(fiber.StatusInternalServerError)
+		return c.JSON(fiber.Map{
+			"message": "Could not login",
+		})
+	}
+	// The token doesn't need to be given out when POST req, so store it as cookie
+	cookie := fiber.Cookie{
+		Name:     "jwt",
+		Value:    token,
+		Expires:  time.Now().Add(time.Hour * 24),
+		HTTPOnly: true,
+	}
+
+	c.Cookie(&cookie)
+	//This ensures frontend only gets the cookie for auth purposes and cant be retrived
+	//or manipulated with
+
+	return c.JSON(fiber.Map{
+		"message": "success ley",
+	})
+
+}
+
+func User(c *fiber.Ctx) error {
+	//This function gets the user's status by getting the token via cookie
+
+	cookie := c.Cookies("jwt")
+
+	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(t *jwt.Token) (interface{}, error) {
+		return []byte(SecretKey), nil
+	})
+
+	if err != nil {
+		c.SendStatus(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "Unauthorised",
+		})
+	}
+
+	claims := token.Claims.(*jwt.StandardClaims)
+
+	var user models.User
+
+	database.DB.Where("id = ?", claims.Issuer).First(&user)
+
 	return c.JSON(user)
+
+}
+
+func Logout(c *fiber.Ctx) error {
+	cookie := fiber.Cookie{
+		Name:    "jwt",
+		Value:   "",
+		Expires: time.Now().Add(-time.Hour),
+	}
+	c.Cookie(&cookie)
+
+	return c.JSON(fiber.Map{
+		"message": "Successfully logged out",
+	})
 }
