@@ -1,11 +1,14 @@
 import React, { useState } from "react"
 import { Redirect } from "react-router";
+import { Link } from "react-router-dom";
+import Spinner from "../Spinner/spinner";
 
 
 function Login(){
     const [password, setPassword] = useState('');
     const [email, setMail] = useState('');
     const [redirect, setRedirect] = useState(false)
+    const [isLoading, setLoading] = useState(true)
      
     const loginHandle = async (e) => {
         e.preventDefault();
@@ -25,7 +28,7 @@ function Login(){
     }
 
     if(redirect){
-        return <Redirect to = "/home" />
+        return <Redirect to = "/" />
     }
 
 
@@ -49,6 +52,9 @@ function Login(){
             </div>
             <div className="checkbox mb-3">
                 <input type="checkbox" defaultValue="remember-me" /> Remember me
+            </div>
+            <div>
+                <Link to = "/register">Are you a new user?</Link>
             </div>
             <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
         

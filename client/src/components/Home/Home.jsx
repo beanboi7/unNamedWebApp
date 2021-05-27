@@ -1,9 +1,10 @@
 import React from 'react';
 
-function Home(){
+function Home(props){
+    
     return(
         <div>
-            <h2>Home page where we display the results</h2>
+                {props.name ? "Vanga nanba "+ props.name.toUpperCase() : "Authorised aagala"}
         </div>
     );
 }
