@@ -9,12 +9,15 @@ import {BrowserRouter, Route} from "react-router-dom"
 export default function App() {
   return (
     <div className = "App">
-    <BrowserRouter>
-      <Header />
-      
-        <Route path = "/" exact component = { Home } />
-        <Route path = "/register" exact component = { Register } />
-        <Route path = "/login" exact component = { Login } />
+    
+      <BrowserRouter>
+        <Header />
+        <main className="form-signin">
+          <Route path = "/" exact component = { Login } />
+          <Route path = "/home" component = {Home} />
+          <Route path = "/register" exact component = { Register } />
+          <Route path = "/login" exact component = { Login } />
+        </main>
       </BrowserRouter>
       
     </div>
