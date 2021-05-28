@@ -1,14 +1,14 @@
 import React, { useState } from "react"
 import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
-import Spinner from "../Spinner/spinner";
+// import Spinner from "../Spinner/spinner";
 
 
-function Login(){
+function Login(props){
     const [password, setPassword] = useState('');
     const [email, setMail] = useState('');
     const [redirect, setRedirect] = useState(false)
-    const [isLoading, setLoading] = useState(true)
+    //const [isLoading, setLoading] = useState(true)
      
     const loginHandle = async (e) => {
         e.preventDefault();
@@ -21,9 +21,10 @@ function Login(){
             })
         });
         // //parse the response from json to jsx, useful to debug without ui transitions
-        const jsonData = response.json()
-        console.log(jsonData)
+        const content = await response.json()
+        console.log(content)
         setRedirect(true);
+        props.setName(content.name);
 
     }
 

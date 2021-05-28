@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import "../../App.css"
 
 function Header(props){
-    const logout = async (e) => {
-        e.preventDefault();
+    
+    const logout = async () => {
         const response = await fetch("http://localhost:3001/api/logout", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -13,6 +13,8 @@ function Header(props){
         //parse the response from json to jsx, useful to debug without ui transitions
         const jsonData = response.json()
         console.log(jsonData)
+
+        props.setName('')
     }
 
     let menu;
@@ -47,7 +49,7 @@ function Header(props){
                 
             </div>
         </nav>
-    )
-}
+    );
+};
 
 export default Header;

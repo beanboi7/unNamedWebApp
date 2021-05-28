@@ -1,10 +1,11 @@
 import React from 'react';
+//import Spinner from "../../components/Spinner/spinner";
 
 function Home(props){
     
     return(
         <div>
-                {props.name ? "Vanga nanba "+ props.name.toUpperCase() : "Authorised aagala"}
+                {props.name  ? "Vanga nanba " + props.name : "Not authorised"} 
         </div>
     );
 }
